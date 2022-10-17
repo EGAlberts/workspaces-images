@@ -1,4 +1,4 @@
-![Logo][logo]
+
 # Workspaces Images
 This repository contains several example of desktop and application Workspaces images.
 Administrators may leverage these images directly or use them as a starting point for their own custom images.
@@ -14,13 +14,12 @@ The Kasm team publishes applications and desktop images for use inside the platf
 
 To build the provided images:
 
-    sudo docker build -t kasmweb/firefox:dev -f dockerfile-kasm-firefox .
-
+    docker build -t egalberts/desktop-jammy-minimal:dev -f dockerfile-kasm-ubuntu-jammy-desktop-minimal .
 
 While these image are primarily built to run inside the Workspaces platform, they can also be executed manually.  Please note that certain functionality, such as audio, uploads, downloads, and microphone pass-through are only available within the Kasm platform.
 
 ```
-sudo docker run --rm  -it --shm-size=512m -p 6901:6901 -e VNC_PW=password kasmweb/firefox:dev
+docker run --rm -it --shm-size=512m -p 6901:6901 -e VNC_PW=password egalberts/desktop-jammy-minimal:dev
 ```
 
 The container is now accessible via a browser : `https://<IP>:6901`
