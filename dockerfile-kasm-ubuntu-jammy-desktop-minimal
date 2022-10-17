@@ -1,6 +1,6 @@
 ARG BASE_TAG="develop"
 ARG BASE_IMAGE="core-ubuntu-jammy"
-FROM kasmweb/$BASE_IMAGE:$BASE_TAG
+FROM egalberts/jammy:1.0.1
 
 USER root
 
@@ -12,6 +12,16 @@ WORKDIR $HOME
 ENV DEBIAN_FRONTEND noninteractive
 ENV KASM_RX_HOME $STARTUPDIR/kasmrx
 ENV INST_SCRIPTS $STARTUPDIR/install
+
+###Add Sudo
+RUN apt-get update \
+    && apt-get install -y sudo \
+    && echo 'kasm-user ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers \
+    && rm -rf /var/lib/apt/list/*
+
+###Add the USER env var
+RUN echo 'USER=whoami; export USER' >> $HOME/.bashrc
+
 
 
 ### Install Tools
@@ -39,6 +49,15 @@ RUN bash $INST_SCRIPTS/firefox/install_firefox.sh && rm -rf $INST_SCRIPTS/firefo
 COPY ./src/ubuntu/install/vs_code $INST_SCRIPTS/vs_code/
 RUN bash $INST_SCRIPTS/vs_code/install_vs_code.sh  && rm -rf $INST_SCRIPTS/vs_code/
 
+### Install Gazebo
+COPY ./src/ubuntu/install/gazebo $INST_SCRIPTS/gazebo/
+RUN bash $INST_SCRIPTS/gazebo/install_gazebo_ignition.sh  && rm -rf $INST_SCRIPTS/gazebo/
+
+### Install ROS2
+COPY ./src/ubuntu/install/ros2 $INST_SCRIPTS/ros2/
+RUN bash $INST_SCRIPTS/ros2/install_ros2_humble.sh  && rm -rf $INST_SCRIPTS/ros2/
+
+
 #ADD ./src/common/scripts $STARTUPDIR
 RUN $STARTUPDIR/set_user_permission.sh $HOME
 
@@ -49,5 +68,18 @@ WORKDIR $HOME
 RUN mkdir -p $HOME && chown -R 1000:0 $HOME
 
 USER 1000
+
+### Install Ardusub and Arduplugin
+WORKDIR $INST_SCRIPTS
+COPY ./src/ubuntu/install/ardusub $INST_SCRIPTS/ardusub/
+RUN bash $INST_SCRIPTS/ardusub/install_ardusub.sh
+RUN bash $INST_SCRIPTS/ardusub/install_ardusub_two.sh
+
+RUN bash $INST_SCRIPTS/ardusub/install_arduplugin.sh  
+
+# WORKDIR $HOME
+# USER 0
+# RUN rm -rf $INST_SCRIPTS/ardusub/
+# USER 1000
 
 CMD ["--tail-log"]
