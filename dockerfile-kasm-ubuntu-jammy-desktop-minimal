@@ -69,13 +69,16 @@ RUN mkdir -p $HOME && chown -R 1000:0 $HOME
 
 USER 1000
 
-### Install Ardusub and Arduplugin
+### Install Ardusub and Arduplugin and Hackathon
 WORKDIR $INST_SCRIPTS
 COPY ./src/ubuntu/install/ardusub $INST_SCRIPTS/ardusub/
+COPY ./src/ubuntu/install/hackathon $INST_SCRIPTS/hackathon/
 RUN bash $INST_SCRIPTS/ardusub/install_ardusub.sh
-RUN bash $INST_SCRIPTS/ardusub/install_ardusub_two.sh
+#RUN bash $INST_SCRIPTS/ardusub/install_ardusub_two.sh
 
 RUN bash $INST_SCRIPTS/ardusub/install_arduplugin.sh  
+
+RUN bash $INST_SCRIPTS/hackathon/install_hackathon.sh
 
 # WORKDIR $HOME
 # USER 0
